@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +25,13 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonStart;
     private Button mButtonPause;
     private Button mButtonStop;
+    private CheckBox mEjercicio1;
+    private CheckBox mEjercicio2;
+    private CheckBox mEjercicio3;
+    private CheckBox mEjercicio4;
+    private CheckBox mEjercicio5;
+    private CheckBox mEjercicio6;
+
 
     //Variable que contará regresivamente
     private CountDownTimer mCountDownTimer45;
@@ -38,19 +47,95 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Enlazamos las variables creadas con elementos del layout
-        mTextViewCountDown45 = findViewById(R.id.text_view_countown45);
-        mTextViewCountDown15 = findViewById(R.id.text_view_countown15);
-        mTextViewSerie = findViewById(R.id.tv_serie);
-        mButtonStart = findViewById(R.id.button_start);
-        mButtonPause = findViewById(R.id.button_pause);
-        mButtonStop = findViewById(R.id.button_stop);
+        mTextViewCountDown45 = findViewById(R.id.tv_countown45);
+        mTextViewCountDown15 = findViewById(R.id.tv_countown15);
+        mTextViewSerie = findViewById(R.id.tv_numero_serie);
+        mButtonStart = findViewById(R.id.btn_start);
+        mButtonPause = findViewById(R.id.btn_pause);
+        mButtonStop = findViewById(R.id.btn_stop);
+        mEjercicio1 = findViewById(R.id.cb1);
+        mEjercicio2 = findViewById(R.id.cb2);
+        mEjercicio3 = findViewById(R.id.cb3);
+        mEjercicio4 = findViewById(R.id.cb4);
+        mEjercicio5 = findViewById(R.id.cb5);
+        mEjercicio6 = findViewById(R.id.cb6);
+
+
+        //Recepcionamos el bundle envíado desde el activity_main
+        Bundle informacion = getIntent().getExtras();
+
+        //Creamos las variables para recoger la información de tipo String cada bundle envíado.
+
+        /*String ObtenerNombre1 = informacion.getString("NombreEjercicio1"); //El fallo cuando pulsamos el boton A ENTRENAR dice que es aqui
+        String ObtenerNombre2 = informacion.getString("NombreEjercicio2");
+        String ObtenerNombre3 = informacion.getString("NombreEjercicio3");
+        String ObtenerNombre4 = informacion.getString("NombreEjercicio4");
+        String ObtenerNombre5 = informacion.getString("NombreEjercicio5");
+        String ObtenerNombre6 = informacion.getString("NombreEjercicio6");
+
+        //Recogemos en otro bundle la información enviada de tipo boolean
+        boolean ejercio1Check = informacion.getBoolean("ejercicio1Check");
+        boolean ejercio2Check = informacion.getBoolean("ejercicio2Check");
+        boolean ejercio3Check = informacion.getBoolean("ejercicio3Check");
+        boolean ejercio4Check = informacion.getBoolean("ejercicio4Check");
+        boolean ejercio5Check = informacion.getBoolean("ejercicio5Check");
+        boolean ejercio6Check = informacion.getBoolean("ejercicio6Check");*/
+
+
+        //Si el ejercicio es distinto de null (se ha envíado al menos uno) que ponga los textos de los strings
+        /*if(ObtenerNombre1 != null){
+            //Si ejercicio1Check fue seleccionado, que recoja la información del string del bundle y lo haga visible
+            if(ejercio1Check == true){
+                mEjercicio1.setVisibility(View.VISIBLE);
+                mEjercicio1.setText(ObtenerNombre1);
+            //Sino fue seleccionado la visibilidad la pone "GONE" quiere decir que no mostrará nada (ya que no se seleccionó)
+            }else {
+                mEjercicio1.setVisibility(View.GONE);
+            }
+
+            if(ejercio2Check == true){
+                mEjercicio2.setVisibility(View.VISIBLE);
+                mEjercicio2.setText(ObtenerNombre2);
+            }else {
+                mEjercicio2.setVisibility(View.GONE);
+            }
+
+            if(ejercio3Check == true){
+                mEjercicio3.setVisibility(View.VISIBLE);
+                mEjercicio3.setText(ObtenerNombre3);
+            }else {
+                mEjercicio3.setVisibility(View.GONE);
+            }
+
+            if(ejercio4Check == true){
+                mEjercicio4.setVisibility(View.VISIBLE);
+                mEjercicio4.setText(ObtenerNombre4);
+            }else {
+                mEjercicio4.setVisibility(View.GONE);
+            }
+
+            if(ejercio5Check == true){
+                mEjercicio5.setVisibility(View.VISIBLE);
+                mEjercicio5.setText(ObtenerNombre5);
+            }else {
+                mEjercicio5.setVisibility(View.GONE);
+            }
+
+            if(ejercio6Check == true){
+                mEjercicio6.setVisibility(View.VISIBLE);
+                mEjercicio6.setText(ObtenerNombre6);
+            }else {
+                mEjercicio6.setVisibility(View.GONE);
+            }
+
+        }*/
+
 
         //Creamos funcionalidad al botón start
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startTimer45();
-                //startTimer15();
 
             }
         });
@@ -72,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 pauseTimer15();
                 resetTimer45();
                 resetTimer15();
+                reseteoSeries();
             }
         });
 
@@ -100,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 startTimer15();
-
             }
         }.start();
     }
@@ -137,8 +222,6 @@ public class MainActivity extends AppCompatActivity {
 
                 //Iniciamos la cuenta de nuevo la cuenta
                 startTimer45();
-
-
             }
         }.start();
     }
@@ -193,5 +276,11 @@ public class MainActivity extends AppCompatActivity {
         //Esa cadena de String se la pasamos a la variable asignada para el elemento textView_countdown)
         mTextViewCountDown15.setText(timeLeftFormatted15);
 
+    }
+
+    //Metodo para resetear el contador de series
+    private void reseteoSeries(){
+        numSerie = 1;
+        mTextViewSerie.setText("01");
     }
 }

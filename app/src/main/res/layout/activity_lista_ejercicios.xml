@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
         android:layout_marginTop="128dp"
-        android:text="Jumpings Jacks"
+        android:text="Salto en cruz"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="34dp"
-        android:text="Burpees"
+        android:text="Flexion y salto"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/CB_Ejercicio1"
         app:layout_constraintTop_toBottomOf="@+id/CB_Ejercicio1" />
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="33dp"
-        android:text="Mountain Climbers"
+        android:text="Escalador"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/CB_Ejercicio4"
         app:layout_constraintTop_toBottomOf="@+id/CB_Ejercicio4" />
@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="34dp"
-        android:text="Boxing"
+        android:text="Puños"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/CB_Ejercicio5"
         app:layout_constraintTop_toBottomOf="@+id/CB_Ejercicio5" />
@@ -71,7 +71,7 @@
         android:id="@+id/btn_Aceptar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ACEPTAR"
+        android:text="ENVIAR"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
