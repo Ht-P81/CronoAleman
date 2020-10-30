@@ -2,7 +2,9 @@ package com.example.cronometrocountdowtimeraleman;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,21 +12,22 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class Lista_Ejercicios extends AppCompatActivity {
 
     //Declaración de variables
     TextView tituloEjercicio;
-    CheckBox ejercicio1;
-    CheckBox ejercicio2;
-    CheckBox ejercicio3;
-    CheckBox ejercicio4;
-    CheckBox ejercicio5;
-    CheckBox ejercicio6;
-    Button botonAceptar;
-    ArrayList <String> nombreEjercicios;
-    ArrayList<CheckBox> checkBoxes;
+    CheckBox ejercicio1, ejercicio2, ejercicio3, ejercicio4, ejercicio5, ejercicio6;
+    Button botonEnviar;
+    //Con estos arraylist guardamos la informacion de los ejercicios seleccionados por el usario que
+    // se envia desde el bundle desde este actividad lista_ejercicios a al main activity de nuevo
+    //ArrayList <String> nombreEjercicios;
+    ArrayList <CheckBox> checkBoxes;
     String tipoEjercicios;
+
+    Set<String> nombreEjercicios;
 
 
 
@@ -33,7 +36,7 @@ public class Lista_Ejercicios extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_ejercicios);
 
-        nombreEjercicios = new ArrayList<>();
+        nombreEjercicios = new LinkedHashSet<>();
         checkBoxes = new ArrayList<>();
 
         //Mapeamos las variables con las vistas de la actividad
@@ -44,9 +47,9 @@ public class Lista_Ejercicios extends AppCompatActivity {
         ejercicio4 = findViewById(R.id.CB_Ejercicio4);
         ejercicio5 = findViewById(R.id.CB_Ejercicio5);
         ejercicio6 = findViewById(R.id.CB_Ejercicio6);
-        botonAceptar = findViewById(R.id.btn_Aceptar);
+        botonEnviar = findViewById(R.id.btn_Enviar);
 
-        //Recepcionamos el bundle envíado desde el activity_main
+        //Recepcionamos el bundle envíado desde el activity_main (poner titulos de nombres a los checbocks)
         Bundle informacion = getIntent().getExtras();
 
         //Creamos la variable para albergar la información mediante el key (SUPERIORES)
@@ -77,28 +80,46 @@ public class Lista_Ejercicios extends AppCompatActivity {
             checkBoxes.add(ejercicio6);
         }
 
-        //con este bón envíamos información desde esta actividad al mainActivity(CRONOMETROS)
-        botonAceptar.setOnClickListener(new View.OnClickListener() {
+        //con este bón envíamos información desde esta actividad a CronosEntrenar
+        botonEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //Con este bucle recorremos el arraylist de checkboxes
                 for(int i = 0; i < checkBoxes.size(); i++){
+                    //Si el checkbox esta seleccionado que ponga la información al array list nombre Ejercicios
                     if(checkBoxes.get(i).isChecked()){
+                        //Esta línea es magnífica
                         nombreEjercicios.add(checkBoxes.get(i).getText().toString());
                     }
                 }
 
-                //Creamos el intent dentro del onclick del botón Aceptar
-                Intent intentAceptar = new Intent (Lista_Ejercicios.this, Seleccion_listas_hiitTrainning.class);
+                guardarPreferencias();
 
-                //bundles para enviar información de los ejercicios
-                intentAceptar.putExtra(tipoEjercicios, nombreEjercicios);
+                //Creamos el intent dentro del onclick del botón Enviar
+                Intent intentEnviar = new Intent (Lista_Ejercicios.this, MainActivity.class);
+
+
+
+                //bundles para enviar información de los ejercicios, la clave es tipoEjercicios mientras la info
+                //es nombreEjercicios agrupada en el list del array.
+                //intentEnviar.putExtra(tipoEjercicios, nombreEjercicios); //Quizas poner nombreEjerciciosSup, inf, ab
 
 
                 //Iniciamos el intent
-                startActivity(intentAceptar);
+                startActivity(intentEnviar);
             }
         });
 
+    } //llave de cierre del onCreate
+
+    private void guardarPreferencias() {
+        SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+        editor.putStringSet(tipoEjercicios, nombreEjercicios);
+        editor.apply();
+
     }
+
+
 }
