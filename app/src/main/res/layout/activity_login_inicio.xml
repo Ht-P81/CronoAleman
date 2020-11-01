@@ -12,7 +12,7 @@
     tools:context=".LoginActivity">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tv_acceso"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="7dp"
@@ -21,28 +21,12 @@
         android:textColor="@android:color/black"
         android:textSize="25sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/et_email"
+        app:layout_constraintBottom_toTopOf="@+id/et_usuario"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/textView10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="102dp"
-        android:layout_marginTop="23dp"
-        android:layout_marginEnd="102dp"
-        android:fontFamily="sans-serif-condensed-medium"
-        android:text="REGISTRO"
-        android:textColor="@android:color/black"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/et_password"
-        app:layout_constraintStart_toStartOf="@+id/et_email"
-        app:layout_constraintTop_toBottomOf="@+id/btn_entrar" />
-
     <EditText
-        android:id="@+id/et_email"
+        android:id="@+id/et_usuario"
         android:layout_width="312dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="189dp"
@@ -58,7 +42,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/et_password"
+        android:id="@+id/et_pasword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
@@ -73,9 +57,9 @@
         android:textColor="@android:color/background_dark"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/et_email"
-        app:layout_constraintStart_toStartOf="@+id/et_email"
-        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+        app:layout_constraintEnd_toEndOf="@+id/et_usuario"
+        app:layout_constraintStart_toStartOf="@+id/et_usuario"
+        app:layout_constraintTop_toBottomOf="@+id/et_usuario" />
 
     <Button
         android:id="@+id/btn_entrar"
@@ -87,8 +71,24 @@
         android:fontFamily="sans-serif-condensed-medium"
         android:text="entrar"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toStartOf="@+id/textView10"
-        app:layout_constraintTop_toBottomOf="@+id/et_password" />
+        app:layout_constraintStart_toStartOf="@+id/tv_registro"
+        app:layout_constraintTop_toBottomOf="@+id/et_pasword" />
+
+    <TextView
+        android:id="@+id/tv_registro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="102dp"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="102dp"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:text="REGISTRO"
+        android:textColor="@android:color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/et_pasword"
+        app:layout_constraintStart_toStartOf="@+id/et_usuario"
+        app:layout_constraintTop_toBottomOf="@+id/btn_entrar" />
 
     <TextView
         android:id="@+id/tv_nuevo_usuario"

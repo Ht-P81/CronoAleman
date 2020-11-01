@@ -1,17 +1,22 @@
 package com.example.cronometrocountdowtimeraleman;
 
-public class Usuario { //CLASE POJO (Plain Old Java Object)
+public class UsuarioBBDD { //CLASE POJO (Plain Old Java Object)
+    //Esta será una clase POJO (Plain Old Java Object) en ella se la da
+    // forma de objeto a una de las tablas de la BBDD
 
+
+    //Campos de clase
     private int id;
     private String nombre;
     private String apellidos;
     private String correo;
     private String clave;
 
-
-    public Usuario(){
+    //Constructor vacío por defecto
+    public UsuarioBBDD(){
     }
 
+    //métodos setters y getters
     public int getId(){
         return id;
     }
