@@ -19,7 +19,7 @@ public class ConexionSQLite extends SQLiteOpenHelper {
     // a implementar y a desarrollar adaptandolo a nuestra necesidades
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE USUARIO (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, apellidos TEXT, clave TEXT, email TEXT)");
+        db.execSQL("CREATE TABLE USUARIO (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, apellidos TEXT, email TEXT, clave TEXT)");
     }
 
     @Override

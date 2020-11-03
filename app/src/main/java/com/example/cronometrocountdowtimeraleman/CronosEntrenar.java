@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -54,9 +55,16 @@ public class CronosEntrenar extends AppCompatActivity {
     private CountDownTimer mCountDownTimer45;
     private CountDownTimer mCountDownTimer15;
 
+    //Declaro variable para activar sonidos en los cronos, cuidado!
+    //después hay que inicializarlos en el oncreate y luego activar funciones en el metodo del crono
+    private MediaPlayer mediaPlayerAccion;
+    private MediaPlayer mediaPlayerRelax;
+
      //Variable que marcará el contenido de la cuenta atras
     private long mTimeLeftInMillis45 = START_TIME_IN_MILLIS45;
     private long mTimeLeftInMillis15 = START_TIME_IN_MILLIS15;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +100,13 @@ public class CronosEntrenar extends AppCompatActivity {
         checkBoxes.add(mEjercicio11 = findViewById(R.id.cb11));
         checkBoxes.add(mEjercicio12 = findViewById(R.id.cb12));
 
+        //Inicializamos los variables d etipo mediaPlayer (sonidos cronos)
+        mediaPlayerAccion = MediaPlayer.create(this, R.raw.vamos_alto);
+        mediaPlayerAccion.setVolume(1000, 1000);
+        mediaPlayerRelax = MediaPlayer.create(this, R.raw.relax_alto);
+        mediaPlayerRelax.setVolume(1000,1000);
+
+        //Dentro del OnCreate cargamos las preferencias
         cargarPreferencias();
 
 
@@ -203,6 +218,7 @@ public class CronosEntrenar extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startTimer45();
+                mediaPlayerAccion.start();
 
             }
         });
@@ -231,7 +247,9 @@ public class CronosEntrenar extends AppCompatActivity {
         mButtonResetTrainning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Que recorra los ejerciciosSuperiores y si checboxkes tiene algo que los ponga GONE
                 reseteoEntrenamiento();
+
             }
         });
 
@@ -248,7 +266,10 @@ public class CronosEntrenar extends AppCompatActivity {
     }
 
 
-    //Desarrollo de los metods invocados
+
+
+
+    //Desarrollo de los metodos invocados
     //Este método es el más importante, se instancia un objeto de tipo CountDowntimer
     private void startTimer45(){
         //pasamos por parámetro al constructor del objeto CountDownTimer la variable que es igual
@@ -259,6 +280,7 @@ public class CronosEntrenar extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 //variable auxiliar que iguale a la final con el tiempo a ejecutar en milisegundos
                 mTimeLeftInMillis45 = millisUntilFinished;
+
                 //actualización de la cuenta regresiva
                 updateCountDownText45();
             }
@@ -267,6 +289,7 @@ public class CronosEntrenar extends AppCompatActivity {
             public void onFinish() {
 
                 startTimer15();
+                mediaPlayerRelax.start();
             }
         }.start();
     }
@@ -303,6 +326,7 @@ public class CronosEntrenar extends AppCompatActivity {
 
                 //Iniciamos la cuenta de nuevo la cuenta
                 startTimer45();
+                mediaPlayerAccion.start();
             }
         }.start();
     }
@@ -382,6 +406,5 @@ public class CronosEntrenar extends AppCompatActivity {
                 num++;
             }
         }
-
     }
 }
