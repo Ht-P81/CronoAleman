@@ -1,4 +1,4 @@
-package com.example.cronometrocountdowtimeraleman;
+package com.example.cronometrocountdowtimeraleman.vista;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.example.cronometrocountdowtimeraleman.R;
+import com.example.cronometrocountdowtimeraleman.controlador.ConexionSQLite;
+import com.example.cronometrocountdowtimeraleman.modelo.Usuario;
 
 public class LoginActivity extends AppCompatActivity {
 

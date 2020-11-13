@@ -1,17 +1,18 @@
-package com.example.cronometrocountdowtimeraleman;
+package com.example.cronometrocountdowtimeraleman.modelo;
 
 import java.util.Date;
 
-public class SesionesEntrenamientoBBDD { //CLASE POJO (Plain Old Java Object)
+public class SesionesEnt { //CLASE POJO (Plain Old Java Object)
 
     //Campos de clase de la tabla sesiones entrenamiento
     private int id;
     private String nombreUsuario;
     private Date fecha;
-    private String ejercicio;
+    private String nombreEjercicio;
+    private String tipoEjercicio;
 
     //Constructor vacío por defecto
-    public SesionesEntrenamientoBBDD(){
+    public SesionesEnt(){
 
     }
 
@@ -41,11 +42,19 @@ public class SesionesEntrenamientoBBDD { //CLASE POJO (Plain Old Java Object)
         this.fecha = fecha;
     }
 
-    public String getEjercicio() {
-        return ejercicio;
+    public String getNombreEjercicio() {
+        return nombreEjercicio;
     }
 
-    public void setEjercicio(String ejercicio) {
-        this.ejercicio = ejercicio;
+    public void setNombreEjercicio(String nombreEjercicio) {
+        this.nombreEjercicio = nombreEjercicio;
+    }
+
+    public String getTipoEjercicio() {
+        return tipoEjercicio;
+    }
+
+    public void setTipoEjercicio(String tipoEjercicio) {
+        this.tipoEjercicio = tipoEjercicio;
     }
 }

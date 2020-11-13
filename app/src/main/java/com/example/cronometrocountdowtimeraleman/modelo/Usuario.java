@@ -1,6 +1,6 @@
-package com.example.cronometrocountdowtimeraleman;
+package com.example.cronometrocountdowtimeraleman.modelo;
 
-public class UsuarioBBDD { //CLASE POJO (Plain Old Java Object)
+public class Usuario { //CLASE POJO (Plain Old Java Object)
     //Esta será una clase POJO (Plain Old Java Object) en ella se la da
     // forma de objeto a una de las tablas de la BBDD
 
@@ -13,7 +13,7 @@ public class UsuarioBBDD { //CLASE POJO (Plain Old Java Object)
     private String clave;
 
     //Constructor vacío por defecto
-    public UsuarioBBDD(){
+    public Usuario(){
     }
 
     //métodos setters y getters

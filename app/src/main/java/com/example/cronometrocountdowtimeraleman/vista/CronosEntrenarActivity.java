@@ -1,9 +1,11 @@
-package com.example.cronometrocountdowtimeraleman;
+package com.example.cronometrocountdowtimeraleman.vista;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,13 +13,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.cronometrocountdowtimeraleman.R;
+import com.example.cronometrocountdowtimeraleman.controlador.ConexionSQLite;
+import com.example.cronometrocountdowtimeraleman.modelo.Ejercicio;
+
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class CronosEntrenar extends AppCompatActivity {
+public class CronosEntrenarActivity extends AppCompatActivity {
 
     //Variable final que marcará la cantidad de la cuenta regresiva
     private static final long START_TIME_IN_MILLIS45 = 45000; //45 SEGUNDOS, EN MILI Segundos
@@ -49,6 +60,8 @@ public class CronosEntrenar extends AppCompatActivity {
     private ArrayList<String> ejerciciosMarcados;
     private ArrayList<CheckBox> checkBoxes;
     private int num = 0; //Para incrementar el número al recorrer los checkboxes
+    ConexionSQLite conexionSQLite;
+    //SQLiteDatabase db;
 
 
     //Variable que contará regresivamente
@@ -72,11 +85,12 @@ public class CronosEntrenar extends AppCompatActivity {
         setContentView(R.layout.activity_cronos);
 
         checkBoxes = new ArrayList<>();
-        //
+
         ejerciciosSuperiores = new LinkedHashSet<>();
         ejerciciosCardio = new LinkedHashSet<>();
-        ejerciciosMarcados = new ArrayList<>();
-        //
+
+
+
 
         //Enlazamos las variables creadas con elementos del layout
         mTextViewCountDown45 = findViewById(R.id.tv_countown45);
@@ -86,6 +100,8 @@ public class CronosEntrenar extends AppCompatActivity {
         mButtonPause = findViewById(R.id.btn_pause);
         mButtonStop = findViewById(R.id.btn_stop);
         mButtonResetTrainning = findViewById(R.id.btn_restart);
+        conexionSQLite = new ConexionSQLite(this);
+        //db = conexionSQLite.getReadableDatabase();
 
         checkBoxes.add(mEjercicio1 = findViewById(R.id.cb1));
         checkBoxes.add(mEjercicio2 = findViewById(R.id.cb2));
@@ -108,6 +124,7 @@ public class CronosEntrenar extends AppCompatActivity {
 
         //Dentro del OnCreate cargamos las preferencias
         cargarPreferencias();
+        guardarRegistroActividad();
 
 
         //Recepcionamos el bundle envíado desde el MainActivity
@@ -119,17 +136,23 @@ public class CronosEntrenar extends AppCompatActivity {
         }*/
 
 
-        for(String ejercicio : ejerciciosSuperiores){
-            checkBoxes.get(num).setVisibility(View.VISIBLE);
-            checkBoxes.get(num).setText(ejercicio);
-            num++;
+        if(ejerciciosSuperiores != null){
+            for(String ejercicio : ejerciciosSuperiores){
+                checkBoxes.get(num).setVisibility(View.VISIBLE);
+                checkBoxes.get(num).setText(ejercicio);
+                num++;
+            }
         }
 
-        for(String ejercicio : ejerciciosCardio){
-            checkBoxes.get(num).setVisibility(View.VISIBLE);
-            checkBoxes.get(num).setText(ejercicio);
-            num++;
+
+        if(ejerciciosCardio != null){
+            for(String ejercicio : ejerciciosCardio){
+                checkBoxes.get(num).setVisibility(View.VISIBLE);
+                checkBoxes.get(num).setText(ejercicio);
+                num++;
+            }
         }
+
 
         /*for(int i = 0; i < ejerciciosSuperiores.size(); i++){
             checkBoxes.get(num).setVisibility(View.VISIBLE);
@@ -247,8 +270,8 @@ public class CronosEntrenar extends AppCompatActivity {
         mButtonResetTrainning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Que recorra los ejerciciosSuperiores y si checboxkes tiene algo que los ponga GONE
-                reseteoEntrenamiento();
+
+                //resetearentrenamiento();
 
             }
         });
@@ -261,8 +284,18 @@ public class CronosEntrenar extends AppCompatActivity {
 
     private void cargarPreferencias() {
         SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
-        ejerciciosSuperiores = preferencias.getStringSet("ejerciciosSuperiores", null);
-        ejerciciosCardio = preferencias.getStringSet("ejerciciosCardio", null);
+        ejerciciosSuperiores = preferencias.getStringSet("Superior", null);
+        ejerciciosCardio = preferencias.getStringSet("Cardio", null);
+    }
+
+    //método para resetear entrenamiento
+    private void resetearentrenamiento(){
+        /*
+        SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferencias.edit();
+        editor.putStringSet("ejerciciosSuperiores ", null);
+        editor.putStringSet("ejerciciosCardio", null);
+        editor.apply();*/
     }
 
 
@@ -339,6 +372,7 @@ public class CronosEntrenar extends AppCompatActivity {
 
     //Aquí paramos la cuenta regresiva
     private void pauseTimer15(){
+        //Poner quizás alguna condición que diga que si NO está funcionanado, NO se cancele???
         mCountDownTimer15.cancel();
     }
 
@@ -389,22 +423,76 @@ public class CronosEntrenar extends AppCompatActivity {
         mTextViewSerie.setText("01");
     }
 
-    //Metodo para el reseteo de entrenamiento
-    private void reseteoEntrenamiento(){
+    private void guardarRegistroActividad(){
 
-        //Que recorra los ejerciciosSuperiores y si checboxkes tiene algo que los ponga GONE
-        for(int i = 0; i<ejerciciosSuperiores.size(); i++){
-            if(checkBoxes != null) {
-                checkBoxes.get(num).setVisibility(View.GONE);
-                num++;
+        /*int contador = 0;
+
+        SharedPreferences preferencias = getSharedPreferences("DatosUsuario", Context.MODE_PRIVATE);
+        int idUsuario = preferencias.getInt("usuarioId", 0);
+
+        Date fechaHoraActual = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+        String f = sdf.format(fechaHoraActual);
+
+        ArrayList<Integer> idEjercicios = new ArrayList<>();
+
+        for(String ejercicio : ejerciciosSuperiores){
+
+            String[] parametro = {ejercicio};
+
+            try{
+                String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
+                Cursor cursor = db.rawQuery(select, parametro);
+
+                cursor.moveToFirst();
+
+                idEjercicios.add(cursor.getInt(0));
+
+                cursor.close();
+                contador++;
+
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
             }
+
         }
 
-        for(int i = 0; i<ejerciciosCardio.size(); i++){
-            if(checkBoxes != null) {
-                checkBoxes.get(num).setVisibility(View.GONE);
-                num++;
-            }
-        }
+        db.close();*/
+
+
+        //conexionSQLite.registrarSesionesEntrenos(idUsuario, idEjercicios, f);
+        conexionSQLite.registroSesion();
+
+        //Toast.makeText(this, "Elementos de arraylist: "+idEjercicios.toString(), Toast.LENGTH_LONG).show();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
 }
