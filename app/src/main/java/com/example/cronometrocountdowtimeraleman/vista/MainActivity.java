@@ -104,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(ejerciciosSuperiores.size() != 0 || ejerciciosCardio.size() != 0){
+                //De esta forma daba un error NPE
+                //if(ejerciciosSuperiores.size() != 0 || ejerciciosCardio.size() != 0){
+                    if(ejerciciosSuperiores != null || ejerciciosCardio != null){
                     //Creamos un intent
                     Intent intentEntrenar= new Intent (MainActivity.this, CronosEntrenarActivity.class);
                     //Con estos putExtra enviamos información a activity_cronos con los ejercicios seleccionados
