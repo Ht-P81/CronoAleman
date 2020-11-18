@@ -3,12 +3,14 @@ package com.example.cronometrocountdowtimeraleman.vista;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -60,8 +62,9 @@ public class CronosEntrenarActivity extends AppCompatActivity {
     private ArrayList<String> ejerciciosMarcados;
     private ArrayList<CheckBox> checkBoxes;
     private int num = 0; //Para incrementar el número al recorrer los checkboxes
+    private int numeroEjercicio = 1;
     ConexionSQLite conexionSQLite;
-    //SQLiteDatabase db;
+    SQLiteDatabase db, db_escritura;
 
 
     //Variable que contará regresivamente
@@ -89,9 +92,6 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         ejerciciosSuperiores = new LinkedHashSet<>();
         ejerciciosCardio = new LinkedHashSet<>();
 
-
-
-
         //Enlazamos las variables creadas con elementos del layout
         mTextViewCountDown45 = findViewById(R.id.tv_countown45);
         mTextViewCountDown15 = findViewById(R.id.tv_countown15);
@@ -101,7 +101,7 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         mButtonStop = findViewById(R.id.btn_stop);
         mButtonResetTrainning = findViewById(R.id.btn_restart);
         conexionSQLite = new ConexionSQLite(this);
-        //db = conexionSQLite.getReadableDatabase();
+        db = conexionSQLite.getReadableDatabase();
 
         checkBoxes.add(mEjercicio1 = findViewById(R.id.cb1));
         checkBoxes.add(mEjercicio2 = findViewById(R.id.cb2));
@@ -124,11 +124,12 @@ public class CronosEntrenarActivity extends AppCompatActivity {
 
         //Dentro del OnCreate cargamos las preferencias
         cargarPreferencias();
+
         guardarRegistroActividad();
 
 
         //Recepcionamos el bundle envíado desde el MainActivity
-        Bundle informacion = getIntent().getExtras();
+        //Bundle informacion = getIntent().getExtras();
 
         /*if(informacion != null){
             ejerciciosSuperiores = informacion.getStringArrayList("ejerciciosSuperiores");
@@ -139,8 +140,13 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         if(ejerciciosSuperiores != null){
             for(String ejercicio : ejerciciosSuperiores){
                 checkBoxes.get(num).setVisibility(View.VISIBLE);
-                checkBoxes.get(num).setText(ejercicio);
+                if(numeroEjercicio<10){
+                    checkBoxes.get(num).setText("0"+numeroEjercicio + " " +ejercicio);
+                } else{
+                    checkBoxes.get(num).setText(numeroEjercicio+ " " +ejercicio);
+                }
                 num++;
+                numeroEjercicio++;
             }
         }
 
@@ -148,8 +154,13 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         if(ejerciciosCardio != null){
             for(String ejercicio : ejerciciosCardio){
                 checkBoxes.get(num).setVisibility(View.VISIBLE);
-                checkBoxes.get(num).setText(ejercicio);
+                if(numeroEjercicio<10){
+                    checkBoxes.get(num).setText("0"+numeroEjercicio + " " + ejercicio);
+                }else{
+                    checkBoxes.get(num).setText(numeroEjercicio + " " + ejercicio);
+                }
                 num++;
+                numeroEjercicio++;
             }
         }
 
@@ -271,8 +282,10 @@ public class CronosEntrenarActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //resetearentrenamiento();
+                resetearentrenamiento();
 
+                startActivity(new Intent(CronosEntrenarActivity.this, MainActivity.class));
+                Toast.makeText(getApplicationContext(), "Ejercicios reiniciados correctamente, por favor seleccione nuevos ejercicios", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -290,16 +303,13 @@ public class CronosEntrenarActivity extends AppCompatActivity {
 
     //método para resetear entrenamiento
     private void resetearentrenamiento(){
-        /*
+
         SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
-        editor.putStringSet("ejerciciosSuperiores ", null);
-        editor.putStringSet("ejerciciosCardio", null);
-        editor.apply();*/
+        editor.putStringSet("Superior", null);
+        editor.putStringSet("Cardio", null);
+        editor.apply();
     }
-
-
-
 
 
     //Desarrollo de los metodos invocados
@@ -425,18 +435,21 @@ public class CronosEntrenarActivity extends AppCompatActivity {
 
     private void guardarRegistroActividad(){
 
-        /*int contador = 0;
-
         SharedPreferences preferencias = getSharedPreferences("DatosUsuario", Context.MODE_PRIVATE);
         int idUsuario = preferencias.getInt("usuarioId", 0);
 
-        Date fechaHoraActual = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Log.e("ID_USUARIO:", idUsuario+"");
 
-        String f = sdf.format(fechaHoraActual);
+        Date fechaHoraActual = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        String fechaHora = sdf.format(fechaHoraActual);
+
+        Log.e("FECHAHORA", fechaHora);
 
         ArrayList<Integer> idEjercicios = new ArrayList<>();
 
+        //Nos llena el arraylist con los id's de los ejercicios seleccionados
         for(String ejercicio : ejerciciosSuperiores){
 
             String[] parametro = {ejercicio};
@@ -444,54 +457,50 @@ public class CronosEntrenarActivity extends AppCompatActivity {
             try{
                 String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
                 Cursor cursor = db.rawQuery(select, parametro);
-
                 cursor.moveToFirst();
-
                 idEjercicios.add(cursor.getInt(0));
-
                 cursor.close();
-                contador++;
-
             }catch (Exception e){
                 Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
             }
-
         }
 
-        db.close();*/
+        db.close();
+
+        for(Integer id : idEjercicios){
+            Log.e("id_ejercicio", id+"");
+        }
+
+        conexionSQLite.close();
+
+        conexionSQLite = new ConexionSQLite(this);
 
 
-        //conexionSQLite.registrarSesionesEntrenos(idUsuario, idEjercicios, f);
-        conexionSQLite.registroSesion();
+        db_escritura = conexionSQLite.getWritableDatabase();
 
-        //Toast.makeText(this, "Elementos de arraylist: "+idEjercicios.toString(), Toast.LENGTH_LONG).show();
+        int cont = 1;
 
-
-
-
-
-
-
-
-
-
-
-
-
+        //Recorre los id's de ejercicios seleccionados y los inserta en la base de datos
+        for(Integer idEjercicio : idEjercicios){
 
 
 
+            String sentencia = "INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES (1, "+cont+", '2017-01-01 10:20:05')";
+            cont++;
+
+            db_escritura.execSQL(sentencia);
 
 
 
+            Log.e("INSERCION", "Realizada inserción");
 
 
+            //conexionSQLite.registroSesion(idUsuario, idEjercicio, fechaHora);
+        }
 
+        db_escritura.close();
 
-
-
-
-
+        Toast.makeText(this, "Elementos de arraylist: "+idEjercicios.size(), Toast.LENGTH_LONG).show();
 
     }
 

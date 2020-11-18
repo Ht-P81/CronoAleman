@@ -132,6 +132,10 @@ public class MainActivity extends AppCompatActivity {
     }//llave de cierre del onCreate
 
     //SharedPreferences
+
+    //
+
+    
     private void cargarPreferencias() {
         SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
         ejerciciosSuperiores = preferencias.getStringSet("Superior", null);

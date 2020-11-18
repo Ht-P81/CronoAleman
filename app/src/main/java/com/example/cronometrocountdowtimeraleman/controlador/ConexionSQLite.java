@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -56,8 +58,6 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE SESION(idUsuario INTEGER, idEjercicio INTEGER, fechahora DATETIME)");
 
         db.execSQL("INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES (1, 1, '2016-01-01 10:20:05')");
-
-
 
     }
 
@@ -138,7 +138,7 @@ public class ConexionSQLite extends SQLiteOpenHelper {
     }*/
 
     //Creamos metodo registro (usuario, dia, ejercicio).
-    public void registrarSesionesEntrenos (int idUsuario, ArrayList<Integer> idSesiones, String fecha){
+    /*public void registrarSesionesEntrenos (int idUsuario, ArrayList<Integer> idSesiones, String fecha){
 
         //Escribimos en nuestra BBDD
         SQLiteDatabase base_de_datos = this.getWritableDatabase();
@@ -152,22 +152,35 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         }
 
         base_de_datos.close();
-    }
+    }*/
 
-    public void registroSesion(){
+    //Este método se hizo a última hora pra probar si registraba algo manual.
+    public void registroSesion(int idUsuario, int idEjercicio, String fechahora){
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-
+        /*ContentValues values = new ContentValues();
         values.put("idUsuario", 1);
-        values.put("idEjercicio", 2);
-        values.put("fechahora", "2016-01-01 10:20:05");
+        values.put("idEjercicio", 3);
+        values.put("fechahora", "2020-01-01 10:20:05");
 
-        long resultado = db.insert("SESION", "id", values);
+        long resultado = db.insert("SESION", "idUsuario", values);
+        Log.e("Resultado_BD", resultado+"");
+
+        db.close();*/
+
+
+        //INSERT INTO usuario (nombre, nombre_completo, clave) VALUES ('pepe23', 'Pepe Rodríguez', '3344zyx');
+
+
+
+        String sentencia = "INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES ("+idUsuario+", "+idEjercicio+", '"+fechahora+"')";
+
+        db.execSQL(sentencia);
 
         db.close();
 
+       Log.e("INSERCION", "Realizada inserción");
 
     }
 }
