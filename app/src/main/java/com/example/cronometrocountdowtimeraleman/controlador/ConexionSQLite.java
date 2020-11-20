@@ -51,13 +51,15 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO EJERCICIO (nombreEjercicio, tipoEjercicio) VALUES ('Cardio6', 'Cardio')");
 
         //Creación de la tabla sesionesEnt
-        /*db.execSQL("CREATE TABLE SESION(idUsuario INTEGER, idEjercicio INTEGER, fechahora DATETIME," +
+        db.execSQL("CREATE TABLE SESION(idUsuario INTEGER, idEjercicio INTEGER, fechahora DATETIME," +
                 " FOREIGN KEY(idUsuario) REFERENCES USUARIO(id), FOREIGN KEY (idEjercicio) REFERENCES EJERCICIO(id), " +
-                "PRIMARY KEY(idUsuario, idEjercicio, fechahora))");*/
+                " PRIMARY KEY(idUsuario, idEjercicio, fechahora))");
 
-        db.execSQL("CREATE TABLE SESION(idUsuario INTEGER, idEjercicio INTEGER, fechahora DATETIME)");
+        //db.execSQL("CREATE TABLE SESION(idUsuario INTEGER, idEjercicio INTEGER, fechahora DATETIME)");
 
-        db.execSQL("INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES (1, 1, '2016-01-01 10:20:05')");
+        //db.execSQL("INSERT INTO SESION(idUsuario, idEjercicio, fechahora) VALUES (IdUsuario, idEjercicio, fechahora)");
+
+        //db.execSQL("INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES (1, 1, '2016-01-01 10:20:05')");
 
     }
 
@@ -69,7 +71,7 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS EJERCICIO");
         //tabla sesionesEnt
         db.execSQL("DROP TABLE IF EXISTS SESION");
-        
+
         onCreate(db);
     }
 
@@ -97,7 +99,7 @@ public class ConexionSQLite extends SQLiteOpenHelper {
 
     ///Con este método creamos los insert y además nos devuelve el id (contentvalues) para poder saber
     //si el usuario ya está registrado o no
-    public long registrarUsuario(Usuario usuario){
+    public long registrarUsuario(Usuario usuario) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -155,9 +157,24 @@ public class ConexionSQLite extends SQLiteOpenHelper {
     }*/
 
     //Este método se hizo a última hora pra probar si registraba algo manual.
-    public void registroSesion(int idUsuario, int idEjercicio, String fechahora){
+
+    public void registroSesiones(int idUsuario, ArrayList<Integer> idEjercicios, String fechahora) {
 
         SQLiteDatabase db = this.getWritableDatabase();
+
+        for (int i = 0; i < idEjercicios.size(); i++) {
+
+            ContentValues values = new ContentValues();
+            values.put("idUsuario", idUsuario);
+            values.put("idEjercicio", idEjercicios.get(i));
+            values.put("fechahora", fechahora);
+
+            db.insert("SESION", "idUsuario", values);
+            Log.e("INSERCION", "OK");
+
+        }
+
+        db.close();
 
         /*ContentValues values = new ContentValues();
         values.put("idUsuario", 1);
@@ -173,14 +190,13 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         //INSERT INTO usuario (nombre, nombre_completo, clave) VALUES ('pepe23', 'Pepe Rodríguez', '3344zyx');
 
 
-
-        String sentencia = "INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES ("+idUsuario+", "+idEjercicio+", '"+fechahora+"')";
+        /*String sentencia = "INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES (" + idUsuario + ", " + idEjercicio + ", '" + fechahora + "')";
 
         db.execSQL(sentencia);
 
         db.close();
 
-       Log.e("INSERCION", "Realizada inserción");
+        Log.e("INSERCION", "Realizada inserción"); */
 
     }
 }

@@ -59,12 +59,12 @@ public class CronosEntrenarActivity extends AppCompatActivity {
     private static CheckBox mEjercicio12;
     private Set<String> ejerciciosSuperiores;
     private Set<String> ejerciciosCardio;
-    private ArrayList<String> ejerciciosMarcados;
     private ArrayList<CheckBox> checkBoxes;
     private int num = 0; //Para incrementar el número al recorrer los checkboxes
     private int numeroEjercicio = 1;
-    ConexionSQLite conexionSQLite;
-    SQLiteDatabase db, db_escritura;
+    private ConexionSQLite conexionSQLite;
+    private SQLiteDatabase db;
+    private boolean empiezaSesion;
 
 
     //Variable que contará regresivamente
@@ -122,10 +122,10 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         mediaPlayerRelax = MediaPlayer.create(this, R.raw.relax_alto);
         mediaPlayerRelax.setVolume(1000,1000);
 
+        empiezaSesion = false;
+
         //Dentro del OnCreate cargamos las preferencias
         cargarPreferencias();
-
-        guardarRegistroActividad();
 
 
         //Recepcionamos el bundle envíado desde el MainActivity
@@ -254,6 +254,12 @@ public class CronosEntrenarActivity extends AppCompatActivity {
                 startTimer45();
                 mediaPlayerAccion.start();
 
+                if(empiezaSesion == false){
+                    guardarRegistroActividad();
+                    empiezaSesion = true;
+                }
+
+
             }
         });
 
@@ -263,6 +269,7 @@ public class CronosEntrenarActivity extends AppCompatActivity {
             public void onClick(View v) {
                 pauseTimer45();
                 pauseTimer15();
+                mediaPlayerRelax.start();
             }
         });
 
@@ -377,13 +384,16 @@ public class CronosEntrenarActivity extends AppCompatActivity {
 
     //Aquí paramos la cuenta regresiva
     private void pauseTimer45(){
+
         mCountDownTimer45.cancel();
     }
 
     //Aquí paramos la cuenta regresiva
     private void pauseTimer15(){
-        //Poner quizás alguna condición que diga que si NO está funcionanado, NO se cancele???
-        mCountDownTimer15.cancel();
+        if (mCountDownTimer15 != null)
+            //if (mCountDownTimer15 == null)
+        mCountDownTimer15.cancel(); //Poner quizás alguna condición que diga que si NO está funcionanado, NO se cancele???
+        //https://stackoverflow.com/questions/46949657/app-crashes-when-countdowntimer-cancel-is-used
     }
 
     //Aquí reiniciamos la cuenta regresiva
@@ -438,14 +448,12 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         SharedPreferences preferencias = getSharedPreferences("DatosUsuario", Context.MODE_PRIVATE);
         int idUsuario = preferencias.getInt("usuarioId", 0);
 
-        Log.e("ID_USUARIO:", idUsuario+"");
 
         Date fechaHoraActual = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         String fechaHora = sdf.format(fechaHoraActual);
 
-        Log.e("FECHAHORA", fechaHora);
 
         ArrayList<Integer> idEjercicios = new ArrayList<>();
 
@@ -465,42 +473,27 @@ public class CronosEntrenarActivity extends AppCompatActivity {
             }
         }
 
+        for(String ejercicio : ejerciciosCardio){
+
+            String[] parametro = {ejercicio};
+
+            try{
+                String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
+                Cursor cursor = db.rawQuery(select, parametro);
+                cursor.moveToFirst();
+                idEjercicios.add(cursor.getInt(0));
+                cursor.close();
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
+            }
+        }
+
         db.close();
 
-        for(Integer id : idEjercicios){
-            Log.e("id_ejercicio", id+"");
-        }
 
-        conexionSQLite.close();
+        conexionSQLite.registroSesiones(idUsuario, idEjercicios, fechaHora);
 
-        conexionSQLite = new ConexionSQLite(this);
-
-
-        db_escritura = conexionSQLite.getWritableDatabase();
-
-        int cont = 1;
-
-        //Recorre los id's de ejercicios seleccionados y los inserta en la base de datos
-        for(Integer idEjercicio : idEjercicios){
-
-
-
-            String sentencia = "INSERT INTO SESION (idUsuario, idEjercicio, fechahora) VALUES (1, "+cont+", '2017-01-01 10:20:05')";
-            cont++;
-
-            db_escritura.execSQL(sentencia);
-
-
-
-            Log.e("INSERCION", "Realizada inserción");
-
-
-            //conexionSQLite.registroSesion(idUsuario, idEjercicio, fechaHora);
-        }
-
-        db_escritura.close();
-
-        Toast.makeText(this, "Elementos de arraylist: "+idEjercicios.size(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Registro de sesión completado", Toast.LENGTH_LONG).show();
 
     }
 
