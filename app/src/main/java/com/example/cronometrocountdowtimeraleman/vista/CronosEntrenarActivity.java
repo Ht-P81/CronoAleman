@@ -65,6 +65,8 @@ public class CronosEntrenarActivity extends AppCompatActivity {
     private ConexionSQLite conexionSQLite;
     private SQLiteDatabase db;
     private boolean empiezaSesion;
+    private int numEjercicios;
+
 
 
     //Variable que contará regresivamente
@@ -254,7 +256,11 @@ public class CronosEntrenarActivity extends AppCompatActivity {
                 startTimer45();
                 mediaPlayerAccion.start();
 
+
+
+                //Ponemos este condicional para evitar sobreescribir 2 veces misma sesión
                 if(empiezaSesion == false){
+                    //LLamamos al método que guarda la sesión
                     guardarRegistroActividad();
                     empiezaSesion = true;
                 }
@@ -285,18 +291,19 @@ public class CronosEntrenarActivity extends AppCompatActivity {
             }
         });
 
+        //Creamos funcionalidad al botón reiniciar los entrenamientos
         mButtonResetTrainning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //LLamamos al método para el mismo
                 resetearentrenamiento();
-
+                //Volvemos al main Activity para que el usuario pueda seleccionar más ejercicios
                 startActivity(new Intent(CronosEntrenarActivity.this, MainActivity.class));
                 Toast.makeText(getApplicationContext(), "Ejercicios reiniciados correctamente, por favor seleccione nuevos ejercicios", Toast.LENGTH_LONG).show();
             }
         });
 
-        //Actulizamos el crono si le damos a stop
+        //Actuliazamos el crono si le damos a stop
         updateCountDownText45();
         updateCountDownText15();
 
@@ -306,18 +313,28 @@ public class CronosEntrenarActivity extends AppCompatActivity {
         SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
         ejerciciosSuperiores = preferencias.getStringSet("Superior", null);
         ejerciciosCardio = preferencias.getStringSet("Cardio", null);
+
+        int numEjerciciosSuperiores = 0, numEjerciciosCardio = 0;
+
+        if(ejerciciosSuperiores != null){
+            numEjerciciosSuperiores = ejerciciosSuperiores.size();
+        }
+
+        if(ejerciciosCardio != null){
+            numEjerciciosCardio = ejerciciosCardio.size();
+        }
+
+        numEjercicios = numEjerciciosSuperiores + numEjerciciosCardio;
     }
 
     //método para resetear entrenamiento
     private void resetearentrenamiento(){
-
         SharedPreferences preferencias = getSharedPreferences("credenciales", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferencias.edit();
         editor.putStringSet("Superior", null);
         editor.putStringSet("Cardio", null);
         editor.apply();
     }
-
 
     //Desarrollo de los metodos invocados
     //Este método es el más importante, se instancia un objeto de tipo CountDowntimer
@@ -362,21 +379,26 @@ public class CronosEntrenarActivity extends AppCompatActivity {
             public void onFinish() {
                 numSerie++;
 
-                if(numSerie < 10){
-                    mTextViewSerie.setText("0"+numSerie);
-                }else{
-                    mTextViewSerie.setText(numSerie);
-                }
-
                 //Reset de cronómetros
                 pauseTimer45();
                 pauseTimer15();
                 resetTimer45();
                 resetTimer15();
 
-                //Iniciamos la cuenta de nuevo la cuenta
-                startTimer45();
-                mediaPlayerAccion.start();
+                if(numSerie <= numEjercicios){
+                    if(numSerie < 10){
+                        mTextViewSerie.setText("0"+numSerie);
+                    }else{
+                        mTextViewSerie.setText(numSerie);
+                    }
+                    
+                    //Iniciamos la cuenta de nuevo la cuenta
+                    startTimer45();
+                    mediaPlayerAccion.start();
+                }else{
+                    Toast.makeText(getApplicationContext(), "Fin de ejercicios", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }.start();
     }
@@ -445,46 +467,54 @@ public class CronosEntrenarActivity extends AppCompatActivity {
 
     private void guardarRegistroActividad(){
 
+        //Cargamos las preferencias de Usuario, sus datos.
         SharedPreferences preferencias = getSharedPreferences("DatosUsuario", Context.MODE_PRIVATE);
+        //Obtenemos la información del IdUsuario, primarykey, por tanto único
         int idUsuario = preferencias.getInt("usuarioId", 0);
 
-
+        //Instanciamos objeto de tipo Date para la fecha y hora
         Date fechaHoraActual = new Date();
+        //Esta intrucción es para dar formato (cuidado que son guiones y NO barras)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        //Finalmente pasamos a un string el formato de fecha.
         String fechaHora = sdf.format(fechaHoraActual);
 
-
+        //Array de jercicios
         ArrayList<Integer> idEjercicios = new ArrayList<>();
 
         //Nos llena el arraylist con los id's de los ejercicios seleccionados
-        for(String ejercicio : ejerciciosSuperiores){
+        if(ejerciciosSuperiores != null) {
+            for (String ejercicio : ejerciciosSuperiores) {
 
-            String[] parametro = {ejercicio};
+                String[] parametro = {ejercicio};
 
-            try{
-                String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
-                Cursor cursor = db.rawQuery(select, parametro);
-                cursor.moveToFirst();
-                idEjercicios.add(cursor.getInt(0));
-                cursor.close();
-            }catch (Exception e){
-                Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
+                try {
+                    String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
+                    Cursor cursor = db.rawQuery(select, parametro);
+                    cursor.moveToFirst();
+                    idEjercicios.add(cursor.getInt(0));
+                    cursor.close();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
-        for(String ejercicio : ejerciciosCardio){
+        if(ejerciciosCardio != null) {
+            for (String ejercicio : ejerciciosCardio) {
 
-            String[] parametro = {ejercicio};
+                String[] parametro = {ejercicio};
 
-            try{
-                String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
-                Cursor cursor = db.rawQuery(select, parametro);
-                cursor.moveToFirst();
-                idEjercicios.add(cursor.getInt(0));
-                cursor.close();
-            }catch (Exception e){
-                Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
+                try {
+                    String select = "SELECT id FROM EJERCICIO WHERE nombreEjercicio = ?";
+                    Cursor cursor = db.rawQuery(select, parametro);
+                    cursor.moveToFirst();
+                    idEjercicios.add(cursor.getInt(0));
+                    cursor.close();
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "Se ha producido un error", Toast.LENGTH_LONG).show();
+                }
             }
         }
 

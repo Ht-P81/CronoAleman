@@ -51,6 +51,8 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO EJERCICIO (nombreEjercicio, tipoEjercicio) VALUES ('Cardio6', 'Cardio')");
 
         //Creación de la tabla sesionesEnt
+        //Damos referencias a claves foráneas y claves primarias
+        //Con estas rectricciones implementadas nos aseguramos que no se le ponga un ejercicio o un usuario que no exista
         db.execSQL("CREATE TABLE SESION(idUsuario INTEGER, idEjercicio INTEGER, fechahora DATETIME," +
                 " FOREIGN KEY(idUsuario) REFERENCES USUARIO(id), FOREIGN KEY (idEjercicio) REFERENCES EJERCICIO(id), " +
                 " PRIMARY KEY(idUsuario, idEjercicio, fechahora))");
@@ -101,6 +103,7 @@ public class ConexionSQLite extends SQLiteOpenHelper {
     //si el usuario ya está registrado o no
     public long registrarUsuario(Usuario usuario) {
 
+        //Creamos una conexion con la base de datos de escritura
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -156,24 +159,35 @@ public class ConexionSQLite extends SQLiteOpenHelper {
         base_de_datos.close();
     }*/
 
-    //Este método se hizo a última hora pra probar si registraba algo manual.
 
+
+    //Metodo para registrar las sesiones de entrenamiento
     public void registroSesiones(int idUsuario, ArrayList<Integer> idEjercicios, String fechahora) {
 
+        //Creamos una conexion con la base de datos de escritura
+        //Nunca meter una instrucción de lectura dentro de un bucle, se vuelve loco
         SQLiteDatabase db = this.getWritableDatabase();
 
+        //Con este bucle se recorren todos los ejercicios que el usuario haya seleccionado
         for (int i = 0; i < idEjercicios.size(); i++) {
 
+            //Le introducimos los valores que necesitamos el idUsuario y fechahora será el mismo
+            //en ese momento, mientras que el idEjercicio variará en cuantos ejercicios haya seleccionado
+            //el usuario.
             ContentValues values = new ContentValues();
             values.put("idUsuario", idUsuario);
             values.put("idEjercicio", idEjercicios.get(i));
             values.put("fechahora", fechahora);
 
+            //Con esta línea es donde insertamos en la tabla sesión los valores indicados anteriormente
             db.insert("SESION", "idUsuario", values);
+
+            //Mensaje para seguir por consola que el metodo funciona y hacía lo debido
             Log.e("INSERCION", "OK");
 
         }
 
+        //Cerramos conexión
         db.close();
 
         /*ContentValues values = new ContentValues();

@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     Button mbtn_grupo2;
     Button mbtn_entrenar;
     Button btn_cerrarSesion;
+    private Button btn_registro;
+
 
     private Set<String> ejerciciosSuperiores;
     private Set<String> ejerciciosCardio;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mbtn_grupo2 = findViewById(R.id.btn_grupo2);
         mbtn_entrenar = findViewById(R.id.btn_entrenar);
         btn_cerrarSesion = findViewById(R.id.btn_cerrarSesion);
+        btn_registro = findViewById(R.id.btn_registro);
 
         //inicializamos las variables de tipo set
         //ejerciciosSuperiores = new LinkedHashSet<>();
@@ -60,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }*/
 
+
+        btn_registro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, RegistroActividadActivity.class));
+            }
+        });
 
         //Le damos funcionalidad a los botones VER1, desde aquí envíamos datos a activity lista ejercicios
         mbtn_grupo1.setOnClickListener(new View.OnClickListener() {
